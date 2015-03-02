@@ -33,7 +33,7 @@ def extract_project_pages(html):
     short_project_page_links = re.findall(extract_project_page_links_regex, html, re.IGNORECASE)
     # Add 'http://sourceforge.net' to links
     project_page_links = fix_project_page_links(short_project_page_links)
-    return project_page_links
+    return uniquify(project_page_links)
 
 
 
@@ -55,12 +55,14 @@ def search_for_string(search_term,max_search_pages=100):
         # Append to results list
         all_project_page_links += project_page_links
         append_list(project_page_links,list_file_path="found_projects_list.txt",initial_text="# List of found projects.\n")
-        logging.debug("all_project_page_links: "+repr(all_project_page_links))
+        #logging.debug("all_project_page_links: "+repr(all_project_page_links))
         # Stop if 2 pages match
         if project_page_links == last_page_links:
             logging.debug("Last two pages were the same, stopping scan.")
+            logging.debug("project_page_links:"+repr(project_page_links))
+            logging.debug("last_page_links:"+repr(last_page_links))
             break
-        last_page_links = project_page_links
+        last_page_links = project_page_links[:]
         continue
     return all_project_page_links
 
@@ -75,7 +77,7 @@ def main():
         cj = cookielib.LWPCookieJar()
         setup_browser(cj)
         # Run main code
-        project_page_links = search_for_string(search_term="the",max_search_pages=100)
+        project_page_links = search_for_string(search_term="as",max_search_pages=100)
 
         logging.info("Finished, exiting.")
 
